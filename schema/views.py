@@ -17,6 +17,13 @@ class SchemaListView(
     queryset = Schema.objects.all()
 
 
+class SchemaDetailView(
+    LoginRequiredMixin,
+    generic.DetailView
+):
+    model = Schema
+
+
 def create_schema(request):
     schema_form = SchemaCreationForm(request.POST or None, user=request.user)
     column_formset = modelformset_factory(Column, form=ColumnCreationForm, extra=1)

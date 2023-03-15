@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load crispy_forms_filters %}
+
+{% block content %}
+  <h1>{{schema.title}}</h1>
+  <a href="">
+    Edit schema
+  </a>
+  <table class="table">
+    <tr>
+      <th>#</th>
+      <th>Column name</th>
+      <th>Column type</th>
+    </tr>
+
+    {% for column in schema.columns.all %}
+      <tr>
+        <td>
+          {{ column.order }}
+        </td>
+        <td>
+          {{ column.name }}
+        </td>
+        <td>
+          {{ column.type }}
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+
+{% endblock %}
