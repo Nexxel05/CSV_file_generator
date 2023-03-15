@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load crispy_forms_filters %}
+
+{% block content %}
+
+{% if form.errors %}
+  <p>Your username and password didn't match. Please try again.</p>
+{% endif %}
+
+  <body>
+    <div class="text-center mb-4">
+      <h1 class="h3 mb-3 font-weight-normal">Login</h1>
+      <p>Authentication is compulsory for every user. In this way we keep our system well-maintained and protected</p>
+    </div>
+
+    <form method="post" action="{% url 'login' %}">
+      {% csrf_token %}
+      {{ form|crispy }}
+
+      <input type="submit" value="Login" class="btn btn-primary" />
+      <input type="hidden" name="next" value="{{ next }}" />
+    </form>
+  </body>
+
+{% endblock %}
