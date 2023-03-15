@@ -3,7 +3,7 @@
 
 {% block content %}
   <h1>Data schemas</h1>
-    <a href="" class="btn btn-primary link-to-page">
+    <a href="{% url 'schema:schema-create' %}" class="btn btn-primary link-to-page">
       Create
     </a>
     <table class="table">
@@ -24,7 +24,7 @@
             {{ schema.title }}
           </td>
           <td>
-            {{ schema.column_type.all }}
+            {{ schema.columns.all }}
           </td>
           <td>
             {{ schema.modified }}

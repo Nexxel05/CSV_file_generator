@@ -13,5 +13,56 @@
     <input type="submit" value="Submit" class="btn btn-success" style="float:right">
     {% csrf_token %}
     {{ schema_form|crispy }}
+
+    {% if formset %}
+      <h1>Columns</h1>
+
+    {{ formset.management_form }}
+    <div id="column-form-list">
+      {% for form in formset %}
+        <div class="column-form">
+          {{form.as_p}}
+        </div>
+      {% endfor %}
+    </div>
+
+    <div id="empty-form" class="hidden">{{ formset.empty_form.as_p }}</div>
+    <button id="add-more" class="btn btn-primary" type="button">Add more</button>
+
+    {% endif %}
   </form>
+
+  <script>
+
+    const addMoreBtn = document.getElementById("add-more")
+    const totalNewForms = document.getElementById("id_form-TOTAL_FORMS")
+
+    addMoreBtn.addEventListener("click", add_new_form)
+
+    function add_new_form(event) {
+      if (event) {
+        event.preventDefault()
+      }
+      const currentColumnForms = document.getElementsByClassName("column-form")
+      const currentFormCount = currentColumnForms.length
+      const formCopyTarget = document.getElementById("column-form-list")
+      const copyEmptyFormEl = document.getElementById("empty-form").cloneNode(true)
+      copyEmptyFormEl.setAttribute("class", "column-form")
+      copyEmptyFormEl.setAttribute("id", `form-${currentFormCount}`)
+      const regex = new RegExp("__prefix__", "g")
+      copyEmptyFormEl.innerHTML = copyEmptyFormEl.innerHTML.replace(regex, currentFormCount)
+      totalNewForms.setAttribute("value", currentFormCount + 1)
+
+      formCopyTarget.append(copyEmptyFormEl)
+    }
+
+    document.querySelector("#dropdown").addEventListener("change", function(e) {
+      const other = document.querySelector("#other");
+      if (e.target.value === "other") {
+        other.style.display = "block";
+      } else {
+        other.style.display = "none";
+      }
+    });
+  </script>
 {% endblock %}
