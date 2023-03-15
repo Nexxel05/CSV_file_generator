@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -13,7 +14,7 @@ class Column(models.Model):
         EMAIL = "Email"
         COMPANY = "Company"
         DATE = "Date"
-    name = models.CharField(max_length=63)
+    name = models.CharField(max_length=255)
     type = models.CharField(
         max_length=100,
         choices=ColumnTypes.choices
@@ -21,11 +22,27 @@ class Column(models.Model):
     order = models.PositiveSmallIntegerField()
     age_min_value = models.PositiveSmallIntegerField(blank=True, null=True)
     age_max_value = models.PositiveSmallIntegerField(blank=True, null=True)
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
 
     class Meta:
         ordering = ["order"]
 
     def __str__(self):
         return self.name
+
+
+class Schema(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+    title = models.CharField(max_length=255)
+    column_type = models.ManyToManyField(
+        Column,
+        verbose_name="schemas"
+    )
+    modified = models.DateField(auto_now=True)
+
+    def __str__(self):
+        return self.title
