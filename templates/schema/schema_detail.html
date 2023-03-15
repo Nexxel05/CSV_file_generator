@@ -27,5 +27,22 @@
       </tr>
       {% endfor %}
     </table>
+    <input type="number" id="number_of_rows" min="0" max="1000">
+    <button class="btn btn-primary" id="btn_number_of_rows">Generate</button>
 
+  <script>
+
+    $("#btn_number_of_rows").click(function () {
+      var number_of_rows = $("#number_of_rows").val();
+      console.log(number_of_rows)
+
+      $.ajax({
+        url: "{% url 'schema:create-csv' pk=schema.id %}",
+        data: {
+          "number_of_rows": number_of_rows
+        },
+      });
+    });
+
+  </script>
 {% endblock %}

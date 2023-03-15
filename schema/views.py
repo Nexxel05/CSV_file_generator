@@ -1,6 +1,9 @@
+import csv
+
+from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import modelformset_factory
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.views import generic
@@ -48,4 +51,20 @@ def create_schema(request):
 
         return HttpResponseRedirect(reverse("schema:schema-list"))
     return render(request, "schema/schema_form.html", context=context)
+
+
+def create_csv(request, pk):
+
+    schema = Schema.objects.get(id=pk)
+    file_name = "{}data.csv".format(settings.MEDIA_ROOT)
+    with open(file_name, 'w', newline="") as file:
+
+        writer = csv.writer(file)
+        writer.writerow(schema.columns.all())
+
+        number_of_rows = int(request.GET.get("number_of_rows"))
+        for row in range(number_of_rows):
+            writer.writerow(["1", "2"])
+
+    return render(request, "schema/schema_list.html")
 
