@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load crispy_forms_filters %}
+
+{% block content %}
+<style>
+  .hidden {
+    display: none
+  }
+</style>
+  <h1>Create Schema</h1>
+
+  <form action="" method="post" novalidate>
+    <input type="submit" value="Submit" class="btn btn-success" style="float:right">
+    {% csrf_token %}
+    {{ schema_form|crispy }}
+  </form>
+{% endblock %}
