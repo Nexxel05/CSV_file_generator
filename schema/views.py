@@ -2,7 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import modelformset_factory
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views import generic
 
 from schema.forms import SchemaCreationForm, ColumnCreationForm
@@ -22,6 +22,11 @@ class SchemaDetailView(
     generic.DetailView
 ):
     model = Schema
+
+
+class SchemaDeleteView(generic.DeleteView):
+    model = Schema
+    success_url = reverse_lazy("schema:schema-list")
 
 
 def create_schema(request):
