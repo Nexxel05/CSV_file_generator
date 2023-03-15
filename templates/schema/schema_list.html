@@ -1,1 +1,47 @@
-<h1>SCHEMA LIST VIEW</h1>
+{% extends "base.html" %}
+{% load crispy_forms_filters %}
+
+{% block content %}
+  <h1>Data schemas</h1>
+    <a href="" class="btn btn-primary link-to-page">
+      Create
+    </a>
+    <table class="table">
+      <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Modified</th>
+        <th>Columns</th>
+        <th>Actions</th>
+      </tr>
+
+      {% for schema in schema_list %}
+        <tr>
+          <td>
+            {{ schema.id }}
+          </td>
+          <td>
+            {{ schema.title }}
+          </td>
+          <td>
+            {{ schema.column_type.all }}
+          </td>
+          <td>
+            {{ schema.modified }}
+          </td>
+
+          <td>
+              <a href="">
+                Edit schema
+              </a>
+            </td>
+            <td>
+              <a style="color: red"
+                href="">
+                Delete
+              </a>
+            </td>
+        </tr>
+      {% endfor %}
+    </table>
+{% endblock %}
