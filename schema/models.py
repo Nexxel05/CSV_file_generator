@@ -38,9 +38,9 @@ class Schema(models.Model):
         on_delete=models.CASCADE
     )
     title = models.CharField(max_length=255)
-    column_type = models.ManyToManyField(
+    columns = models.ManyToManyField(
         Column,
-        verbose_name="schemas"
+        related_name="schemas"
     )
     modified = models.DateField(auto_now=True)
 
