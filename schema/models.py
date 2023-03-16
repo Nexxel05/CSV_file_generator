@@ -46,3 +46,13 @@ class Schema(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Dataset(models.Model):
+    dataset = models.FileField(null=True)
+    created = models.DateTimeField(auto_now_add=True)
+    schema = models.ForeignKey(
+        Schema,
+        on_delete=models.CASCADE,
+        related_name="datasets"
+    )

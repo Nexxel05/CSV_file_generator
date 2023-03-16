@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseAdmin
 
-from schema.models import Schema, User, Column
+from schema.models import Schema, User, Column, Dataset
 
 
 @admin.register(User)
@@ -15,5 +15,10 @@ class SchemaAdmin(admin.ModelAdmin):
 
 
 @admin.register(Column)
-class SchemaAdmin(admin.ModelAdmin):
+class ColumnAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Dataset)
+class DatasetAdmin(admin.ModelAdmin):
     pass

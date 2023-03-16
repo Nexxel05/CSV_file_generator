@@ -29,7 +29,13 @@
     </table>
     <input type="number" id="number_of_rows" min="0" max="1000">
     <button class="btn btn-primary" id="btn_number_of_rows">Generate</button>
-
+    {% if schema.datasets.all %}
+      <h3>Datasets</h3>
+      {% for dataset in schema.datasets.all %}
+        {{dataset.created}}
+        <a href="{% url 'schema:download-csv' pk=dataset.id %}">Download</a>
+      {%endfor%}
+    {% endif %}
   <script>
 
     $("#btn_number_of_rows").click(function () {

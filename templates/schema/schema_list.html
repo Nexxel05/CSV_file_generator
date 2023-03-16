@@ -21,7 +21,7 @@
             {{ schema.id }}
           </td>
           <td>
-            {{ schema.title }}
+            <a href="{% url 'schema:schema-detail' pk=schema.id%}">{{ schema.title }}</a>
           </td>
           <td>
             {{ schema.columns.all }}
