@@ -2,11 +2,12 @@ import csv
 from pathlib import Path
 
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files import File
 from django.forms import modelformset_factory
 from django.http import HttpResponseRedirect, FileResponse, JsonResponse, HttpResponseBadRequest
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views import generic
 
@@ -35,6 +36,7 @@ class SchemaDeleteView(generic.DeleteView):
     success_url = reverse_lazy("schema:schema-list")
 
 
+@login_required
 def create_schema(request):
     schema_form = SchemaCreationForm(request.POST or None, user=request.user)
     column_formset = modelformset_factory(Column, form=ColumnCreationForm, extra=1)
@@ -56,6 +58,34 @@ def create_schema(request):
     return render(request, "schema/schema_form.html", context=context)
 
 
+@login_required
+def update_schema(request, pk):
+    schema = get_object_or_404(Schema, id=pk)
+    schema_form = SchemaCreationForm(
+        request.POST or None,
+        user=request.user,
+        instance=schema
+    )
+    column_formset = modelformset_factory(Column, form=ColumnCreationForm, extra=0)
+    columns = schema.columns.all()
+    formset = column_formset(request.POST or None, queryset=columns)
+
+    context = {
+        "schema_form": schema_form,
+        "formset": formset
+    }
+
+    if all([schema_form.is_valid(), formset.is_valid()]):
+        parent = schema_form.save()
+        for form in formset:
+            child = form.save()
+            parent.columns.add(child)
+
+        return HttpResponseRedirect(reverse("schema:schema-list"))
+    return render(request, "schema/schema_form.html", context=context)
+
+
+@login_required
 def create_csv(request, pk):
     data = {}
     schema = Schema.objects.get(id=pk)
@@ -85,6 +115,7 @@ def create_csv(request, pk):
         return HttpResponseBadRequest()
 
 
+@login_required
 def download_csv(request, pk):
     dataset = Dataset.objects.get(id=pk)
 
