@@ -1,7 +1,9 @@
 import csv
+from pathlib import Path
 
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.files import File
 from django.forms import modelformset_factory
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
@@ -9,7 +11,7 @@ from django.urls import reverse, reverse_lazy
 from django.views import generic
 
 from schema.forms import SchemaCreationForm, ColumnCreationForm
-from schema.models import Schema, Column
+from schema.models import Schema, Column, Dataset
 
 
 class SchemaListView(
@@ -56,7 +58,8 @@ def create_schema(request):
 def create_csv(request, pk):
 
     schema = Schema.objects.get(id=pk)
-    file_name = "{}data.csv".format(settings.MEDIA_ROOT)
+    file_name = Path("{}data.csv".format(settings.MEDIA_ROOT))
+
     with open(file_name, 'w', newline="") as file:
 
         writer = csv.writer(file)
@@ -66,5 +69,16 @@ def create_csv(request, pk):
         for row in range(number_of_rows):
             writer.writerow(["1", "2"])
 
+    with file_name.open(mode="rb") as f:
+        csv_dataset = Dataset.objects.create(schema=schema)
+        csv_dataset.dataset = File(f, name=file_name.name)
+        csv_dataset.save()
     return render(request, "schema/schema_list.html")
 
+
+def download_csv(request, pk):
+    dataset = Dataset.objects.get(id=pk)
+    response = HttpResponse(content_type="text/csv")
+    response["Content-Disposition"] = f"attachment; filename={dataset.dataset}"
+
+    return response

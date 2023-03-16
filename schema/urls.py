@@ -8,6 +8,7 @@ urlpatterns = [
     path("schema/<int:pk>/", SchemaDetailView.as_view(), name="schema-detail"),
     path("schema/<int:pk>/delete/", SchemaDeleteView.as_view(), name="schema-delete"),
     path("schema/<int:pk>/create_csv/", create_csv, name="create-csv"),
+    path("schema/dataset/<int:pk>/download_csv/", download_csv, name="download-csv"),
 ]
 
 app_name = "schema"
