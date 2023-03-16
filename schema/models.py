@@ -56,3 +56,4 @@ class Dataset(models.Model):
         on_delete=models.CASCADE,
         related_name="datasets"
     )
+    is_generated = models.BooleanField(default=False)

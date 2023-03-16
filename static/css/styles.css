@@ -1,10 +1,15 @@
 body {
-  padding: 20px 50px;
+  padding: 20px 200px;
+
 
 }
 
 .navbar-nav {
   font-size: 20px;
+}
+
+.data-generate {
+    float: right;
 }
 
 

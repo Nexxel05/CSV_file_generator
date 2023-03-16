@@ -5,7 +5,7 @@ from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files import File
 from django.forms import modelformset_factory
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, FileResponse, JsonResponse, HttpResponseBadRequest
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.views import generic
@@ -56,29 +56,35 @@ def create_schema(request):
 
 
 def create_csv(request, pk):
-
+    data = {}
     schema = Schema.objects.get(id=pk)
     file_name = Path("{}data.csv".format(settings.MEDIA_ROOT))
-
+    number_of_rows = int(request.GET.get("number_of_rows"))
+    if number_of_rows:
+        csv_dataset = Dataset.objects.create(schema=schema)
     with open(file_name, 'w', newline="") as file:
-
         writer = csv.writer(file)
         writer.writerow(schema.columns.all())
 
-        number_of_rows = int(request.GET.get("number_of_rows"))
         for row in range(number_of_rows):
             writer.writerow(["1", "2"])
 
     with file_name.open(mode="rb") as f:
-        csv_dataset = Dataset.objects.create(schema=schema)
         csv_dataset.dataset = File(f, name=file_name.name)
+        csv_dataset.is_generated = True
         csv_dataset.save()
-    return render(request, "schema/schema_list.html")
+
+    if is_ajax(request=request):
+        return JsonResponse(data)
+    else:
+        return HttpResponseBadRequest()
 
 
 def download_csv(request, pk):
     dataset = Dataset.objects.get(id=pk)
-    response = HttpResponse(content_type="text/csv")
-    response["Content-Disposition"] = f"attachment; filename={dataset.dataset}"
 
-    return response
+    return FileResponse(dataset.dataset, as_attachment=True)
+
+
+def is_ajax(request):
+    return request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
