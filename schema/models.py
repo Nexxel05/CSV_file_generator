@@ -22,8 +22,6 @@ class Column(models.Model):
     order = models.PositiveSmallIntegerField()
     age_min_value = models.PositiveSmallIntegerField(blank=True, null=True)
     age_max_value = models.PositiveSmallIntegerField(blank=True, null=True)
-    first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)
 
     class Meta:
         ordering = ["order"]
