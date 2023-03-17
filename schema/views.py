@@ -11,7 +11,7 @@ from django.shortcuts import render, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views import generic
 
-from schema.forms import SchemaCreationForm, ColumnCreationForm
+from schema.forms import SchemaCreationForm, ColumnCreationForm, RequiredFormSet
 from schema.models import Schema, Column, Dataset
 from schema.scripts import column_type_fake_relation
 
@@ -39,7 +39,7 @@ class SchemaDeleteView(generic.DeleteView):
 @login_required
 def create_schema(request):
     schema_form = SchemaCreationForm(request.POST or None, user=request.user)
-    column_formset = modelformset_factory(Column, form=ColumnCreationForm, extra=1)
+    column_formset = modelformset_factory(Column, form=ColumnCreationForm, extra=1, formset=RequiredFormSet)
     columns = Column.objects.none()
     formset = column_formset(request.POST or None, queryset=columns)
 
@@ -48,13 +48,13 @@ def create_schema(request):
         "formset": formset
     }
 
-    if all([schema_form.is_valid(), formset.is_valid()]):
+    if schema_form.is_valid() and formset.is_valid():
         parent = schema_form.save()
         for form in formset:
             child = form.save()
             parent.columns.add(child)
 
-        return HttpResponseRedirect(reverse("schema:schema-list"))
+        return HttpResponseRedirect(reverse("schema:schema-detail", args=[parent.id]))
     return render(request, "schema/schema_form.html", context=context)
 
 
@@ -66,7 +66,7 @@ def update_schema(request, pk):
         user=request.user,
         instance=schema
     )
-    column_formset = modelformset_factory(Column, form=ColumnCreationForm, extra=0)
+    column_formset = modelformset_factory(Column, form=ColumnCreationForm, extra=0, formset=RequiredFormSet)
     columns = schema.columns.all()
     formset = column_formset(request.POST or None, queryset=columns)
 
@@ -81,7 +81,7 @@ def update_schema(request, pk):
             child = form.save()
             parent.columns.add(child)
 
-        return HttpResponseRedirect(reverse("schema:schema-list"))
+        return HttpResponseRedirect(reverse("schema:schema-detail", args=[schema.id]))
     return render(request, "schema/schema_form.html", context=context)
 
 

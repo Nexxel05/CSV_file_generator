@@ -1,4 +1,5 @@
 from django import forms
+from django.forms import BaseModelFormSet
 
 from schema.models import Schema, Column
 
@@ -23,3 +24,10 @@ class ColumnCreationForm(forms.ModelForm):
     class Meta:
         model = Column
         fields = "__all__"
+
+
+class RequiredFormSet(BaseModelFormSet):
+    def __init__(self, *args, **kwargs):
+        super(RequiredFormSet, self).__init__(*args, **kwargs)
+        for form in self.forms:
+            form.empty_permitted = False
