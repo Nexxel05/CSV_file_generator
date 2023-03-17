@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% load crispy_forms_filters %}
+
+{% block content %}
+
+  <h1>New Schema</h1>
+
+  <form action="" method="post" novalidate>
+    <input type="submit" value="Submit" class="btn btn-primary" style="float:right">
+    {% csrf_token %}
+    {{ schema_form|crispy }}
+
+    {% if formset %}
+      <h1>Schema columns</h1>
+
+    {{ formset.management_form }}
+    <div id="column-form-list">
+      {% for form in formset %}
+        <div class="column-form">
+          {{ form.as_table }}
+          <p><button id="remove-form-row" class="btn btn-danger">Remove</button></p>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div
+        id="empty_form" class="hidden">{{ formset.empty_form.as_table }}
+    </div>
+    <button id="add_more" class="btn btn-primary" type="button">Add more</button>
+
+    {% endif %}
+  </form>
+
+  <script>
+
+    const totalNewForms = document.getElementById("id_form-TOTAL_FORMS")
+
+    $('#add_more').click(function () {
+
+      const currentColumnForms = document.getElementsByClassName("column-form")
+      const currentFormCount = currentColumnForms.length
+      const formCopyTarget = document.getElementById("column-form-list")
+      const copyEmptyFormEl = document.getElementById("empty_form").cloneNode(true)
+      const copyDeleteButton = document.getElementById("remove-form-row").cloneNode(true)
+
+      copyEmptyFormEl.setAttribute("class", "column-form")
+      copyEmptyFormEl.setAttribute("id", `form-${currentFormCount}`)
+      const regex = new RegExp("__prefix__", "g")
+      copyEmptyFormEl.innerHTML = copyEmptyFormEl.innerHTML.replace(regex, currentFormCount)
+      totalNewForms.setAttribute("value", currentFormCount + 1)
+      copyEmptyFormEl.append(copyDeleteButton)
+      formCopyTarget.append(copyEmptyFormEl)
+    });
+
+    $(document).on('click', '#remove-form-row', function (e) {
+            console.log("#remove-form-row click clicked");
+            e.preventDefault();
+            deleteForm('form', $(this));
+            return false;
+        });
+
+        function deleteForm(prefix_tag, btn) {
+
+            var total = parseInt($('#id_' + prefix_tag + '-TOTAL_FORMS').val());
+            var forms = $('.column-form');
+            console.log(forms)
+            btn.closest('.column-form').remove();
+
+            var formlength = forms.length - 1;
+
+            var idstring = '#id_' + prefix_tag + '-TOTAL_FORMS';
+            $(idstring).val(parseInt(formlength));
+            for (var i = 0, formCount = formlength; i < formCount; i++) {
+                $(forms.get(i)).find(':input').each(function () {
+                    updateElementIndex(this, prefix_tag, i);
+                });
+            }
+        };
+
+        function updateElementIndex(el, prefix_tag, ndx) {
+            {#Replace/reorder the numbers of the forms in formset#}
+            {#I.E. inspection_report_form-0, ... -1, ... -2 if you delete -1 then two forms are left and reorder:#}
+            {#inspection_report_form-0, and then inspection_report_form-2 becomes -1#}
+            var id_regex = new RegExp('(' + prefix_tag + '-\\d+)');
+            console.log("updateElementIndex id_regex: ", id_regex)
+            var replacement = prefix_tag + '-' + ndx;
+            console.log("updateElementIndex replacmenet: ", replacement)
+            console.log("updateElementIndex el: ", el)
+            {#console.log("replacement: ", replacement);#}
+            if ($(el).attr("for")) $(el).attr("for", $(el).attr("for").replace(id_regex, replacement));
+            if (el.id) el.id = el.id.replace(id_regex, replacement);
+            if (el.name) el.name = el.name.replace(id_regex, replacement);
+        };
+
+  </script>
+{% endblock %}

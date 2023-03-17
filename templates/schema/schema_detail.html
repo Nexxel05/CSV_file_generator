@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% load crispy_forms_filters %}
+
+{% block content %}
+  <h1>{{schema.title}}</h1>
+  <a class="btn btn-primary" style="float:right" href="{% url 'schema:schema-update' pk=schema.id %}">
+    Edit schema
+  </a>
+
+  <table class="table">
+    <tr>
+      <th>#</th>
+      <th>Column name</th>
+      <th>Column type</th>
+    </tr>
+
+    {% for column in schema.columns.all %}
+      <tr>
+        <td>
+          {{ column.order }}
+        </td>
+        <td>
+          {{ column.name }}
+        </td>
+        <td>
+          {{ column.type }}
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+
+    <h3>Datasets</h3>
+    <div class="data-generate">
+      <input type="number" id="number_of_rows" min="0" max="1000">
+      <button class="btn btn-success" id="btn_number_of_rows">Generate</button>
+    </div>
+    {% if schema.datasets.all %}
+      <table class="table">
+        <tr>
+          <th>#</th>
+          <th>Created</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+
+       {% for dataset in schema.datasets.all %}
+          <tr>
+            <td>
+              {{dataset.id}}
+            </td>
+            <td>
+              {{dataset.created}}
+            </td>
+            <td>
+              {% if dataset.is_generated %}
+                <button class="btn btn-success">Ready</button>
+              {% else %}
+                <button class="btn btn-secondary">Processing</button>
+              {% endif %}
+            </td>
+            <td>
+              {% if dataset.is_generated %}
+                <a href="{% url 'schema:download-csv' pk=dataset.id %}">Download</a>
+              {% else %}
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </table>
+    {% endif %}
+
+  <script>
+
+    $("#btn_number_of_rows").click(function () {
+      var number_of_rows = $("#number_of_rows").val();
+
+      $.ajax({
+        url: "{% url 'schema:create-csv' pk=schema.id %}",
+        data: {
+          "number_of_rows": number_of_rows
+        },
+      });
+    });
+
+  </script>
+{% endblock %}

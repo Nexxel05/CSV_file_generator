@@ -1,0 +1,28 @@
+body {
+  padding: 20px 200px;
+}
+
+.hidden {
+display: none
+}
+
+.navbar-nav {
+  font-size: 20px;
+}
+
+.data-generate {
+    float: right;
+}
+
+
+#add_more {
+   margin: 20px;
+}
+
+#remove-form-row {
+    margin: 20 px;
+}
+
+.column-form {
+    margin: 20px;
+}
