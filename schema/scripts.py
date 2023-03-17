@@ -16,8 +16,5 @@ def column_type_fake_relation(column):
     elif column.type == "Date":
         return fake.date()
 
-    elif column.type == "Age":
-        return fake.random_int(
-            min=column.age_min_value,
-            max=column.age_max_value
-        )
+    elif column.type == "Job":
+        return fake.job()

@@ -10,7 +10,7 @@ class User(AbstractUser):
 class Column(models.Model):
     class ColumnTypes(models.TextChoices):
         NAME = "Full name"
-        AGE = "Age"
+        Job = "Job"
         EMAIL = "Email"
         COMPANY = "Company"
         DATE = "Date"
@@ -20,8 +20,6 @@ class Column(models.Model):
         choices=ColumnTypes.choices
     )
     order = models.PositiveSmallIntegerField()
-    age_min_value = models.PositiveSmallIntegerField(blank=True, null=True)
-    age_max_value = models.PositiveSmallIntegerField(blank=True, null=True)
 
     class Meta:
         ordering = ["order"]
